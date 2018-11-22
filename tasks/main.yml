@@ -40,8 +40,8 @@
 
 - name: sync v2ray config
   synchronize:
-    src: v2ray/{{ inventory_hostname }}/config.json
-    dest: /etc/v2ray/config.json
+    src: v2ray/{{ inventory_hostname }}/
+    dest: /etc/v2ray/
   when: v2ray_config.stat.exists
   notify:
     - configtest v2ray
