@@ -1,0 +1,10 @@
+---
+- name: configtest v2ray
+  command: v2ray -test
+  register: v2ray_configtest_result
+
+- name: reload v2ray
+  service:
+    name: v2ray
+    state: reloaded
+  when: v2ray_configtest_result is succeeded

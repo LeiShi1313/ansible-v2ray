@@ -1,0 +1,51 @@
+---
+- name: download installer
+  get_url:
+    url: "{{ v2ray_script_url }}"
+    dest: /tmp/v2ray-installer.sh
+    mode: 755
+    force: yes
+  register: v2ray_installer
+  tags:
+    - v2ray
+    - install
+    - update
+
+- name: run v2ray installer
+  command: /tmp/v2ray-installer.sh
+  when: v2ray_installer is changed
+  tags:
+    - v2ray
+    - install
+    - update
+
+- name: check if v2ray config exists
+  local_action: stat path={{ inventory_dir }}/files/v2ray/{{ inventory_hostname }}.json
+  register: v2ray_config
+  tags:
+    - v2ray
+    - v2ray_config
+    - debug
+
+- name: v2ray config warning
+  debug:
+    msg: |
+      v2ray config does not exists! please create your own config at
+        {{ inventory_dir }}/files/v2ray/{{ inventory_hostname }}.json
+  when: not v2ray_config.stat.exists
+  tags:
+    - v2ray
+    - v2ray_config
+    - debug
+
+- name: sync v2ray config
+  synchronize:
+    src: v2ray/{{ inventory_hostname }}.json
+    dest: /etc/v2ray/config.json
+  when: v2ray_config.stat.exists
+  notify:
+    - configtest v2ray
+    - reload v2ray
+  tags:
+    - v2ray
+    - v2ray_config
