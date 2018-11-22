@@ -45,7 +45,7 @@
   when: v2ray_config.stat.exists
   notify:
     - configtest v2ray
-    - reload v2ray
+    - restart v2ray
   tags:
     - v2ray
     - v2ray_config
